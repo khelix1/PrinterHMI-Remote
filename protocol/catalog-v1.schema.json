@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:printerhmi:remote:catalog:v1",
+  "title": "PrinterHMI Remote Moonraker catalog",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "instance_id",
+      "socket_path",
+      "data_path",
+      "reachable"
+    ],
+    "properties": {
+      "instance_id": { "type": "string", "format": "uuid" },
+      "socket_path": { "type": "string" },
+      "data_path": { "type": "string" },
+      "hostname": { "type": ["string", "null"] },
+      "moonraker_version": { "type": ["string", "null"] },
+      "klippy_state": { "type": ["string", "null"] },
+      "reachable": { "type": "boolean" },
+      "error": { "type": ["string", "null"] }
+    }
+  }
+}

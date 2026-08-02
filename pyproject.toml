@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "printerhmi-remote-agent"
+version = "0.1.0.dev0"
+description = "Local-first monitoring agent for Klipper and Moonraker"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "PrinterHMI contributors" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Topic :: System :: Monitoring",
+]
+dependencies = []
+
+[project.scripts]
+printerhmi-agent = "printerhmi_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
