@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
+from .api import LocalAgentApi, default_api_socket_path
+from .catalog import build_catalog
 from .identity import instance_identity, machine_identity
 from .monitor import snapshots
 from .telemetry import utc_now
@@ -66,12 +68,20 @@ class SnapshotStore:
             if self._flush_task is asyncio.current_task():
                 self._flush_task = None
 
-    def _write_locked(self, now: float) -> None:
-        document = {
+    async def document(self) -> dict:
+        async with self._lock:
+            return self._document_locked()
+
+    def _document_locked(self) -> dict:
+        # JSON round-trip provides a consistent detached view to API consumers.
+        return json.loads(json.dumps({
             "schema_version": 1,
             "generated_at": utc_now(),
             "instances": self.instances,
-        }
+        }))
+
+    def _write_locked(self, now: float) -> None:
+        document = self._document_locked()
         self.path.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.path.with_suffix(self.path.suffix + ".tmp")
         temporary.write_text(
@@ -118,9 +128,28 @@ async def monitor_forever(
             await asyncio.sleep(retry_seconds)
 
 
-async def run_service(paths: Iterable[Path], state_path: Optional[Path] = None) -> None:
+async def run_service(
+    paths: Iterable[Path],
+    state_path: Optional[Path] = None,
+    api_socket_path: Optional[Path] = None,
+) -> None:
     sockets = list(paths)
     if not sockets:
         raise RuntimeError("no local Moonraker Unix sockets found")
-    store = SnapshotStore(state_path or default_state_path())
-    await asyncio.gather(*(monitor_forever(path, store) for path in sockets))
+    resolved_state_path = state_path or default_state_path()
+    store = SnapshotStore(resolved_state_path)
+    catalog = await build_catalog(sockets)
+    api = LocalAgentApi(
+        api_socket_path or default_api_socket_path(resolved_state_path),
+        store,
+        (item.to_dict() for item in catalog),
+    )
+    await api.start()
+    try:
+        await asyncio.gather(
+            *(monitor_forever(path, store) for path in sockets),
+            api.serve_forever(),
+        )
+    finally:
+        await api.close()
+        await store.flush()

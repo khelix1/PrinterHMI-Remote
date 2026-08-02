@@ -57,6 +57,19 @@ The service opens no TCP listener. Its atomically replaced read-only snapshot is
 at `~/.local/state/printerhmi-remote/status.json` by default. Rapid Moonraker events
 are coalesced so persistent storage is updated at most once per second.
 
+The service also exposes a versioned, read-only API at
+`~/.local/state/printerhmi-remote/agent.sock`. The socket is mode `0600`, verifies
+same-user peer credentials and accepts no printer-control methods:
+
+```bash
+.venv/bin/printerhmi-agent api health
+.venv/bin/printerhmi-agent api catalog
+.venv/bin/printerhmi-agent api snapshot
+```
+
+Health reports catalog membership separately from telemetry readiness, so a
+newly started service does not temporarily claim that discovered printers vanished.
+
 Explicit socket paths may be supplied when an installation uses a custom layout:
 
 ```bash

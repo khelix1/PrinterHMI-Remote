@@ -18,3 +18,7 @@
   fields from dynamically discovered sensor objects.
 - Replaced the development user unit with a boot-persistent, least-privilege system
   service that runs as the Klipper account and requires only Unix-socket access.
+- Added a versioned, same-user, read-only local Unix-socket API for agent health,
+  catalog discovery, complete snapshots and individual instance state.
+- Made service upgrades restart deterministically and verify the new API with an
+  end-to-end request instead of trusting a possibly stale socket pathname.

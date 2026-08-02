@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://printerhmi.dev/protocol/local-api-v1.schema.json",
+  "title": "PrinterHMI Remote local API request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol_version", "method"],
+  "properties": {
+    "protocol_version": {"const": 1},
+    "method": {
+      "enum": ["health", "catalog", "snapshot", "instance.get"]
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"instance_id": {"type": "string", "minLength": 1}}
+    }
+  }
+}

@@ -8,7 +8,7 @@ User=@SERVICE_USER@
 Group=@SERVICE_GROUP@
 Environment=HOME=@HOME_DIR@
 WorkingDirectory=@REPO_DIR@
-ExecStart=@AGENT@ run
+ExecStart=@AGENT@ run --api-socket @API_SOCKET@
 Restart=on-failure
 RestartSec=2
 UMask=0077

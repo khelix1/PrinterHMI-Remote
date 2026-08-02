@@ -13,7 +13,8 @@ The foundation agent:
 - makes no cloud connection;
 - sends no printer data off the host;
 - reads Moonraker through explicitly discovered local Unix sockets;
-- exposes no printer-control commands.
+- exposes no printer-control commands;
+- serves local state only through a mode-0600 Unix socket with same-user peer checks.
 
 Do not expose Moonraker ports or development agent interfaces to the public internet.
 
