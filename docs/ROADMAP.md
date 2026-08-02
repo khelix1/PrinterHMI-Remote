@@ -12,7 +12,8 @@
 - Long-running service and health model
 - Zeroconf and multi-instance reconciliation
 - Same-user authenticated local catalog and telemetry API
-- Installer, systemd service, diagnostics and Update Manager integration
+- Installer, systemd service and privacy-preserving diagnostics
+- Moonraker Update Manager integration
 
 ## Phase 2 — secure enrollment
 

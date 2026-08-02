@@ -7,6 +7,7 @@ from typing import Sequence
 
 from .api import api_request, default_api_socket_path
 from .catalog import build_catalog
+from .diagnostics import collect_diagnostics, write_support_bundle
 from .discovery import discover_socket_paths
 from .monitor import snapshots
 from .service import default_state_path, run_service
@@ -46,6 +47,15 @@ def main(argv: Sequence[str] = None) -> int:
     api.add_argument("method", choices=("health", "catalog", "snapshot", "instance.get"))
     api.add_argument("--api-socket", type=Path, default=None)
     api.add_argument("--instance-id")
+    diagnose = subparsers.add_parser(
+        "diagnose",
+        help="report agent health and create a sanitized support bundle",
+    )
+    diagnose.add_argument("--api-socket", type=Path, default=None)
+    diagnose.add_argument("--state-file", type=Path, default=None)
+    diagnose.add_argument("--output", type=Path, default=None)
+    diagnose.add_argument("--json", action="store_true")
+    diagnose.add_argument("--no-bundle", action="store_true")
     args = parser.parse_args(argv)
 
     if args.command == "discover":
@@ -96,6 +106,39 @@ def main(argv: Sequence[str] = None) -> int:
             return 1
         print(json.dumps(response, indent=2, sort_keys=True))
         return 0 if response.get("ok") else 1
+
+    if args.command == "diagnose":
+        state_path = args.state_file or default_state_path()
+        report = asyncio.run(
+            collect_diagnostics(
+                args.api_socket or default_api_socket_path(state_path),
+                state_path,
+            )
+        )
+        bundle = None if args.no_bundle else write_support_bundle(report, args.output)
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            health = report["local_api"].get("health") or {}
+            service = report["service"]
+            print("PrinterHMI Remote diagnostics")
+            print("  Service: {} / {}".format(
+                service.get("active_state") or "unavailable",
+                service.get("sub_state") or "unknown",
+            ))
+            print("  Local API: {}".format(
+                "ready" if report["local_api"]["available"] else "unavailable"
+            ))
+            print("  Printers: {} discovered, {} connected".format(
+                health.get("instance_count", len(report["printers"])),
+                health.get("connected_count", 0),
+            ))
+            print("  Sanitized errors: {}".format(
+                len(report["recent_sanitized_errors"])
+            ))
+        if bundle is not None:
+            print("Support bundle: {}".format(bundle))
+        return 0 if report["local_api"]["available"] else 1
 
     parser.error("unknown command")
     return 2

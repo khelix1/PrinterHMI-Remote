@@ -32,6 +32,7 @@ will be reconciled into the same catalog later.
 - `catalog.py` owns normalized instance inspection.
 - `model.py` owns consumer-facing data structures.
 - `api.py` owns the same-user, read-only local consumer boundary.
+- `diagnostics.py` owns redaction, health summaries and private support bundles.
 - `protocol/` owns versioned cross-process schemas.
 
 The P4 firmware is not an internet gateway. It will be an optional local client of

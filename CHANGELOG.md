@@ -22,3 +22,5 @@
   catalog discovery, complete snapshots and individual instance state.
 - Made service upgrades restart deterministically and verify the new API with an
   end-to-end request instead of trusting a possibly stale socket pathname.
+- Added one-command operator diagnostics and mode-0600 support bundles with strict
+  exclusion of raw telemetry, identities, network endpoints and print filenames.

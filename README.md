@@ -70,6 +70,15 @@ same-user peer credentials and accepts no printer-control methods:
 Health reports catalog membership separately from telemetry readiness, so a
 newly started service does not temporarily claim that discovered printers vanished.
 
+Create a private, sanitized support bundle with one command:
+
+```bash
+.venv/bin/printerhmi-agent diagnose
+```
+
+The bundle excludes raw telemetry and identifying printer, network and job data.
+See [Diagnostics](docs/DIAGNOSTICS.md) for its exact disclosure boundary.
+
 Explicit socket paths may be supplied when an installation uses a custom layout:
 
 ```bash
