@@ -12,6 +12,8 @@ The foundation agent:
 - opens no TCP listener;
 - stores its Ed25519 device identity and enrollment state under mode-0600 files;
 - limits one-time pairing offers by expiry and failed-attempt count;
+- authenticates offline relay transcripts with domain-separated Ed25519 signatures;
+- persists consumed challenge IDs so successful enrollment cannot be replayed;
 - makes no cloud connection;
 - sends no printer data off the host;
 - reads Moonraker through explicitly discovered local Unix sockets;

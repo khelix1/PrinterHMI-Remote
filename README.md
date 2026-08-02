@@ -88,8 +88,16 @@ expiring one-time pairing offer:
 .venv/bin/printerhmi-agent enrollment peers
 ```
 
-Pairing is local-only in Phase 2. It does not enable cloud connectivity or expose
-Moonraker. See [Secure enrollment threat model](docs/THREAT_MODEL.md).
+Phase 2 also defines signed, replay-resistant relay enrollment as an offline
+JSON transcript. It does not enable cloud connectivity or expose Moonraker:
+
+```bash
+.venv/bin/printerhmi-agent enrollment challenge-sign --request challenge.json
+.venv/bin/printerhmi-agent enrollment relay-complete --request enrollment-request.json
+```
+
+See the [relay enrollment protocol](docs/RELAY_ENROLLMENT_PROTOCOL.md) and
+[secure enrollment threat model](docs/THREAT_MODEL.md).
 
 Register a pristine Git installation with Moonraker Update Manager:
 

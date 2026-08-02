@@ -32,6 +32,9 @@ also trusted at this milestone because it owns Moonraker and the agent process.
 | --- | --- |
 | Pairing-code guessing | Ten Crockford-style characters, five-attempt lockout, PBKDF2-HMAC-SHA256 verifier and generic rejection errors |
 | Pairing-code replay | Successful codes are deleted atomically and cannot be reused |
+| Challenge replay | Each successful challenge ID is persisted and rejected on reuse; challenges expire within five minutes |
+| Peer key substitution | The peer signs a domain-separated transcript binding its key to the pairing, device, relay, challenge and nonce |
+| Transcript confusion | Challenge responses, peer proofs and receipts use distinct domain separators and canonical JSON |
 | Stale pairing offer | Ten-minute default expiry; accepted range is 60–1800 seconds |
 | Private-key disclosure | Mode-0700 directory, mode-0600 files, atomic writes and no private key in CLI or audit output |
 | State races | Advisory process lock around identity, pairing, peer and audit mutations |
@@ -50,7 +53,7 @@ also trusted at this milestone because it owns Moonraker and the agent process.
 
 ## Phase 3 release gates
 
-Before enabling remote transport, the project must add authenticated challenge
-exchange, TLS certificate validation, replay-resistant relay sessions,
+Before enabling remote transport, the project must add TLS certificate and
+configured relay identity validation, replay-resistant authenticated sessions,
 multi-tenant authorization, credential revocation propagation, rate limiting,
 bounded queues, privacy review and sustained adversarial field testing.

@@ -63,13 +63,21 @@ def main(argv: Sequence[str] = None) -> int:
     )
     enrollment.add_argument(
         "action",
-        choices=("identity", "pair-create", "pair-consume", "peers", "revoke", "rotate"),
+        choices=(
+            "identity", "pair-create", "pair-consume", "peers",
+            "revoke", "rotate", "challenge-sign", "relay-complete",
+        ),
     )
     enrollment.add_argument("--ttl", type=int, default=DEFAULT_PAIRING_TTL)
     enrollment.add_argument("--pairing-id")
     enrollment.add_argument("--code")
     enrollment.add_argument("--peer-id")
     enrollment.add_argument("--peer-public-key")
+    enrollment.add_argument(
+        "--request",
+        type=Path,
+        help="JSON request path, or - to read standard input",
+    )
     enrollment.add_argument("--confirm", action="store_true")
     enrollment.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
@@ -154,9 +162,25 @@ def main(argv: Sequence[str] = None) -> int:
                 if not args.peer_id:
                     parser.error("enrollment revoke requires --peer-id")
                 result = store.revoke_peer(args.peer_id)
+            elif args.action in ("challenge-sign", "relay-complete"):
+                if args.request is None:
+                    parser.error(
+                        "enrollment {} requires --request PATH or --request -".format(
+                            args.action
+                        )
+                    )
+                if str(args.request) == "-":
+                    request_document = json.load(sys.stdin)
+                else:
+                    with args.request.open("r", encoding="utf-8") as request_file:
+                        request_document = json.load(request_file)
+                if args.action == "challenge-sign":
+                    result = store.sign_relay_challenge(request_document)
+                else:
+                    result = store.complete_relay_enrollment(request_document)
             else:
                 result = store.rotate_identity(confirmed=args.confirm)
-        except EnrollmentError as exc:
+        except (EnrollmentError, OSError, json.JSONDecodeError) as exc:
             print("ERROR: enrollment: {}".format(exc), file=sys.stderr)
             return 1
 

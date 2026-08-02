@@ -2,12 +2,21 @@ import json
 import stat
 import tempfile
 import unittest
+import base64
 from pathlib import Path
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from printerhmi_agent.enrollment import EnrollmentError, EnrollmentStore, verify_signature
+from printerhmi_agent.enrollment import (
+    EnrollmentError,
+    EnrollmentStore,
+    create_relay_challenge,
+    peer_proof_payload,
+    verify_challenge_response,
+    verify_enrollment_receipt,
+    verify_signature,
+)
 
 
 def peer_key():
@@ -16,9 +25,12 @@ def peer_key():
         encoding=serialization.Encoding.Raw,
         format=serialization.PublicFormat.Raw,
     )
-    import base64
     encoded = base64.urlsafe_b64encode(public).rstrip(b"=").decode("ascii")
     return private, encoded
+
+
+def encoded(value):
+    return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
 
 
 class MutableClock:
@@ -107,6 +119,95 @@ class EnrollmentTests(unittest.TestCase):
         self.assertNotEqual(identity["device_id"], rotated["device_id"])
         self.assertEqual(rotated["generation"], 2)
         self.assertEqual(self.store.list_peers(), [])
+
+    def test_signed_relay_challenge_is_bound_to_device_and_transcript(self):
+        identity = self.store.identity()
+        challenge = create_relay_challenge(
+            identity["device_id"], "relay-test", 120, self.clock
+        )
+        response = self.store.sign_relay_challenge(challenge)
+        verified = verify_challenge_response(response, self.clock)
+        self.assertEqual(verified, challenge)
+
+        tampered = json.loads(json.dumps(response))
+        tampered["challenge"]["relay_id"] = "relay-attacker"
+        with self.assertRaisesRegex(EnrollmentError, "signature"):
+            verify_challenge_response(tampered, self.clock)
+
+    def test_expired_and_wrong_audience_challenges_are_rejected(self):
+        identity = self.store.identity()
+        challenge = create_relay_challenge(
+            identity["device_id"], "relay-test", 60, self.clock
+        )
+        wrong = dict(challenge)
+        wrong["audience"] = "phm_aaaaaaaaaaaaaaaaaaaaaaaaaa"
+        with self.assertRaisesRegex(EnrollmentError, "wrong audience"):
+            self.store.sign_relay_challenge(wrong)
+
+        self.clock.value += 61
+        with self.assertRaisesRegex(EnrollmentError, "expired"):
+            self.store.sign_relay_challenge(challenge)
+
+    def test_relay_enrollment_proves_peer_key_and_rejects_replay(self):
+        identity = self.store.identity()
+        offer = self.store.create_pairing(120)
+        private_key, public_key = peer_key()
+        challenge = create_relay_challenge(
+            identity["device_id"], "relay-test", 120, self.clock
+        )
+        proof = peer_proof_payload(
+            challenge,
+            offer["pairing_id"],
+            "browser-client",
+            identity["device_id"],
+        )
+        request = {
+            "schema_version": 1,
+            "type": "relay.enrollment-request",
+            "challenge": challenge,
+            "pairing_id": offer["pairing_id"],
+            "code": offer["code"],
+            "peer_id": "browser-client",
+            "peer_public_key": public_key,
+            "peer_signature": encoded(private_key.sign(proof)),
+        }
+        receipt = self.store.complete_relay_enrollment(request)
+        verified = verify_enrollment_receipt(receipt)
+        self.assertEqual(verified["peer_id"], "browser-client")
+        self.assertEqual(verified["challenge_id"], challenge["challenge_id"])
+
+        with self.assertRaisesRegex(EnrollmentError, "already been used"):
+            self.store.complete_relay_enrollment(request)
+
+    def test_bad_peer_proof_does_not_consume_pairing(self):
+        identity = self.store.identity()
+        offer = self.store.create_pairing(120)
+        private_key, public_key = peer_key()
+        challenge = create_relay_challenge(
+            identity["device_id"], "relay-test", 120, self.clock
+        )
+        proof = peer_proof_payload(
+            challenge,
+            offer["pairing_id"],
+            "browser-client",
+            identity["device_id"],
+        )
+        request = {
+            "schema_version": 1,
+            "type": "relay.enrollment-request",
+            "challenge": challenge,
+            "pairing_id": offer["pairing_id"],
+            "code": offer["code"],
+            "peer_id": "browser-client",
+            "peer_public_key": public_key,
+            "peer_signature": encoded(b"x" * 64),
+        }
+        with self.assertRaisesRegex(EnrollmentError, "peer enrollment proof"):
+            self.store.complete_relay_enrollment(request)
+
+        request["peer_signature"] = encoded(private_key.sign(proof))
+        receipt = self.store.complete_relay_enrollment(request)
+        self.assertEqual(receipt["peer_id"], "browser-client")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/khelix1/PrinterHMI-Remote/protocol/relay-challenge-v1.schema.json",
+  "title": "PrinterHMI Remote relay challenge v1",
+  "oneOf": [
+    { "$ref": "#/$defs/challenge" },
+    { "$ref": "#/$defs/response" }
+  ],
+  "$defs": {
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "type", "challenge_id", "relay_id", "nonce", "audience", "issued_at", "expires_at"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "const": "relay.challenge" },
+        "challenge_id": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "relay_id": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,64}$" },
+        "nonce": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "audience": { "type": "string", "pattern": "^phm_[a-z2-7]{26}$" },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "type", "challenge", "device_id", "device_public_key", "signed_at", "signature"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "type": { "const": "agent.challenge-response" },
+        "challenge": { "$ref": "#/$defs/challenge" },
+        "device_id": { "type": "string", "pattern": "^phm_[a-z2-7]{26}$" },
+        "device_public_key": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "signed_at": { "type": "string", "format": "date-time" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$" }
+      }
+    }
+  }
+}

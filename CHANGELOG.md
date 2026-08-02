@@ -32,3 +32,7 @@
   expiring attempt-limited pairing, peer revocation, key rotation and audit events.
 - Added a formal Phase 2 threat model and versioned pairing-offer schema while
   retaining the no-network service sandbox.
+- Added domain-separated relay challenge signatures, peer proof-of-key ownership,
+  signed enrollment receipts and persisted replay protection.
+- Added versioned relay transcript schemas and offline CLI seams without enabling
+  any TCP listener or outbound relay transport.

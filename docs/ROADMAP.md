@@ -21,7 +21,9 @@
 - [x] Ed25519 device key generation and protected local storage
 - [x] Expiring, attempt-limited one-time pairing codes
 - [x] Peer revocation, destructive key rotation and secret-free audit events
-- [ ] Relay challenge exchange and end-to-end enrollment field testing
+- [x] Domain-separated relay challenges, peer key proof and signed receipts
+- [x] Persisted challenge replay prevention and versioned transcript schemas
+- [ ] End-to-end enrollment over a reviewed network relay
 
 ## Phase 3 — remote monitoring
 
