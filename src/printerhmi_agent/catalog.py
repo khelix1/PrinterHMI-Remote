@@ -22,11 +22,26 @@ async def inspect_instance(socket_path: Path) -> MoonrakerInstance:
             error="{}: {}".format(type(exc).__name__, exc),
         )
 
+    # server.info owns reachability and version/state. Moonraker exposes the
+    # actual Klipper host name through printer.info, so enrich the catalog without
+    # allowing an optional metadata failure to mark a healthy instance offline.
+    printer_info = {}
+    try:
+        printer_info = await request(socket_path, "printer.info")
+    except Exception:
+        pass
+
+    hostname = (
+        _optional_text(printer_info.get("hostname"))
+        or _optional_text(info.get("hostname"))
+        or socket_path.parent.parent.name
+    )
+
     return MoonrakerInstance(
         instance_id=identifier,
         socket_path=str(socket_path),
         data_path=data_path,
-        hostname=_optional_text(info.get("hostname")),
+        hostname=hostname,
         moonraker_version=_optional_text(info.get("moonraker_version")),
         klippy_state=_optional_text(info.get("klippy_state")),
         reachable=True,

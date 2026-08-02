@@ -26,6 +26,12 @@ threat model are reviewed.
 .venv/bin/printerhmi-agent discover --json
 ```
 
+For development deployment to a Klipper host, apply the tracked exclusions:
+
+```bash
+rsync -av --filter="merge .rsync-filter" ./ user@printer:~/PrinterHMI-Remote/
+```
+
 Explicit socket paths may be supplied when an installation uses a custom layout:
 
 ```bash
