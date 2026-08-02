@@ -148,7 +148,61 @@ sudo systemctl is-active --quiet "$moonraker_service" || {
     exit 1
 }
 
+moonraker_socket="$data_dir/comms/moonraker.sock"
+expected_hash="$(git -C "$repo_dir" rev-parse HEAD)"
+updater_ready=false
+
+for _attempt in {1..60}; do
+    if "$repo_dir/.venv/bin/python" \
+        - "$moonraker_socket" "$expected_hash" <<'PY_READY'
+import asyncio
+import sys
+from pathlib import Path
+
+from printerhmi_agent.moonraker import request
+
+
+async def verify() -> bool:
+    try:
+        result = await request(
+            Path(sys.argv[1]),
+            "machine.update.status",
+            {"refresh": True},
+            timeout=4.0,
+        )
+    except Exception:
+        return False
+
+    updater = result.get("version_info", {}).get("printerhmi-remote", {})
+    return all((
+        updater.get("is_valid") is True,
+        updater.get("branch") == "main",
+        updater.get("is_dirty") is False,
+        updater.get("current_hash") == sys.argv[2],
+        updater.get("remote_url")
+            == "https://github.com/khelix1/PrinterHMI-Remote.git",
+    ))
+
+
+raise SystemExit(0 if asyncio.run(verify()) else 1)
+PY_READY
+    then
+        updater_ready=true
+        break
+    fi
+    sleep 1
+done
+
+if [[ "$updater_ready" != true ]]; then
+    echo "ERROR: Moonraker Update Manager did not become ready" >&2
+    echo "Expected valid, clean main at $expected_hash" >&2
+    echo "Socket: $moonraker_socket" >&2
+    sudo journalctl -u "$moonraker_service" -n 100 --no-pager >&2 || true
+    exit 1
+fi
+
 echo "PASS: PrinterHMI Remote registered with Moonraker Update Manager"
+echo "PASS: updater valid on clean main at $expected_hash"
 echo "Configuration: $fragment"
 echo "Allowed service: $service_name"
 echo "Channel: dev"

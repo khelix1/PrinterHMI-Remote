@@ -10,7 +10,10 @@ Register a clean installation on `main` with:
 The installer writes an included configuration fragment, authorizes only the
 `printerhmi-remote` systemd service in `moonraker.asvc`, and restarts Moonraker.
 It is idempotent and retains one backup of `moonraker.conf` before adding the
-include.
+include. Installation returns successfully only after Moonraker reports a valid,
+clean `main` checkout at the exact installed commit and canonical origin. The
+readiness probe uses the selected instance's local Unix socket, not a fixed TCP
+port.
 
 If multiple Moonraker instances exist, select the primary instance explicitly:
 

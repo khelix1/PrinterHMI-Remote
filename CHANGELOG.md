@@ -26,3 +26,5 @@
   exclusion of raw telemetry, identities, network endpoints and print filenames.
 - Added idempotent Moonraker Update Manager registration for pristine `main` checkouts,
   canonical-origin validation and least-privilege service restart authorization.
+- Made Update Manager installation wait for Moonraker to validate the exact clean
+  `main` revision over its local Unix socket before reporting success.

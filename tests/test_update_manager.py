@@ -34,6 +34,21 @@ class UpdateManagerTests(unittest.TestCase):
         self.assertIn('moonraker.asvc', installer)
         self.assertIn('systemctl restart "$moonraker_service"', installer)
 
+    def test_installer_waits_for_valid_exact_updater_revision(self):
+        installer = (ROOT / "install-update-manager.sh").read_text(
+            encoding="utf-8"
+        )
+        for required in (
+            'moonraker_socket="$data_dir/comms/moonraker.sock"',
+            '"machine.update.status"',
+            'updater.get("is_valid") is True',
+            'updater.get("branch") == "main"',
+            'updater.get("is_dirty") is False',
+            'updater.get("current_hash") == sys.argv[2]',
+            "Moonraker Update Manager did not become ready",
+        ):
+            self.assertIn(required, installer)
+
     def test_multiple_instances_require_explicit_primary(self):
         installer = (ROOT / "install-update-manager.sh").read_text(
             encoding="utf-8"
