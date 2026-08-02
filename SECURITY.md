@@ -10,6 +10,8 @@ internet exposure.
 The foundation agent:
 
 - opens no TCP listener;
+- stores its Ed25519 device identity and enrollment state under mode-0600 files;
+- limits one-time pairing offers by expiry and failed-attempt count;
 - makes no cloud connection;
 - sends no printer data off the host;
 - reads Moonraker through explicitly discovered local Unix sockets;
@@ -22,7 +24,8 @@ Do not expose Moonraker ports or development agent interfaces to the public inte
 
 ## Future release gates
 
-Internet relay work requires a reviewed threat model covering authentication,
+The local enrollment threat model is documented in `docs/THREAT_MODEL.md`.
+Internet relay work additionally requires review covering authentication,
 enrollment, tenant isolation, secret storage, key rotation, revocation, replay
 prevention, rate limiting, audit logging, update integrity and incident response.
 

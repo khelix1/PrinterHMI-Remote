@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:printerhmi:remote:enrollment:v1",
+  "title": "PrinterHMI Remote one-time pairing offer v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pairing_id",
+    "device_id",
+    "device_public_key",
+    "code",
+    "expires_at"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "pairing_id": {"type": "string", "format": "uuid"},
+    "device_id": {"type": "string", "pattern": "^phm_[a-z2-7]{26}$"},
+    "device_public_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[2-9A-HJ-NP-Z]{5}-[2-9A-HJ-NP-Z]{5}$"
+    },
+    "expires_at": {"type": "string", "format": "date-time"}
+  }
+}

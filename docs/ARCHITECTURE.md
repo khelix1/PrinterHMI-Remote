@@ -8,7 +8,7 @@ PrinterHMI Remote has three future runtime boundaries:
 2. **Relay** — accepts outbound authenticated agent connections and isolates tenants.
 3. **Client** — browser, phone, or PrinterHMI P4 consuming normalized state.
 
-Only the agent exists in the foundation milestone.
+The local agent and its offline secure-enrollment boundary now exist; the relay and client remain future components.
 
 ## Local data flow
 
@@ -28,6 +28,7 @@ will be reconciled into the same catalog later.
 
 - `discovery.py` owns candidate socket enumeration.
 - `identity.py` owns stable local instance identity.
+- `enrollment.py` owns device keys, one-time pairing, peers, revocation and audit events.
 - `moonraker.py` owns JSON-RPC framing and transport.
 - `catalog.py` owns normalized instance inspection.
 - `model.py` owns consumer-facing data structures.

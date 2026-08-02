@@ -28,3 +28,7 @@
   canonical-origin validation and least-privilege service restart authorization.
 - Made Update Manager installation wait for Moonraker to validate the exact clean
   `main` revision over its local Unix socket before reporting success.
+- Added the offline secure-enrollment foundation with Ed25519 device identity,
+  expiring attempt-limited pairing, peer revocation, key rotation and audit events.
+- Added a formal Phase 2 threat model and versioned pairing-offer schema while
+  retaining the no-network service sandbox.

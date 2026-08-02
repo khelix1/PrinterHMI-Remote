@@ -9,6 +9,7 @@ from .api import api_request, default_api_socket_path
 from .catalog import build_catalog
 from .diagnostics import collect_diagnostics, write_support_bundle
 from .discovery import discover_socket_paths
+from .enrollment import DEFAULT_PAIRING_TTL, EnrollmentError, EnrollmentStore
 from .monitor import snapshots
 from .service import default_state_path, run_service
 
@@ -56,6 +57,21 @@ def main(argv: Sequence[str] = None) -> int:
     diagnose.add_argument("--output", type=Path, default=None)
     diagnose.add_argument("--json", action="store_true")
     diagnose.add_argument("--no-bundle", action="store_true")
+    enrollment = subparsers.add_parser(
+        "enrollment",
+        help="manage local cryptographic identity and one-time pairing",
+    )
+    enrollment.add_argument(
+        "action",
+        choices=("identity", "pair-create", "pair-consume", "peers", "revoke", "rotate"),
+    )
+    enrollment.add_argument("--ttl", type=int, default=DEFAULT_PAIRING_TTL)
+    enrollment.add_argument("--pairing-id")
+    enrollment.add_argument("--code")
+    enrollment.add_argument("--peer-id")
+    enrollment.add_argument("--peer-public-key")
+    enrollment.add_argument("--confirm", action="store_true")
+    enrollment.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
     if args.command == "discover":
@@ -106,6 +122,54 @@ def main(argv: Sequence[str] = None) -> int:
             return 1
         print(json.dumps(response, indent=2, sort_keys=True))
         return 0 if response.get("ok") else 1
+
+    if args.command == "enrollment":
+        store = EnrollmentStore()
+        try:
+            if args.action == "identity":
+                result = store.identity()
+            elif args.action == "pair-create":
+                result = store.create_pairing(args.ttl)
+            elif args.action == "pair-consume":
+                required = (
+                    args.pairing_id,
+                    args.code,
+                    args.peer_id,
+                    args.peer_public_key,
+                )
+                if not all(required):
+                    parser.error(
+                        "enrollment pair-consume requires --pairing-id, "
+                        "--code, --peer-id and --peer-public-key"
+                    )
+                result = store.consume_pairing(
+                    args.pairing_id,
+                    args.code,
+                    args.peer_id,
+                    args.peer_public_key,
+                )
+            elif args.action == "peers":
+                result = {"schema_version": 1, "peers": store.list_peers()}
+            elif args.action == "revoke":
+                if not args.peer_id:
+                    parser.error("enrollment revoke requires --peer-id")
+                result = store.revoke_peer(args.peer_id)
+            else:
+                result = store.rotate_identity(confirmed=args.confirm)
+        except EnrollmentError as exc:
+            print("ERROR: enrollment: {}".format(exc), file=sys.stderr)
+            return 1
+
+        if args.action == "pair-create" and not args.json:
+            print("PrinterHMI Remote one-time pairing")
+            print("  Code: {}".format(result["code"]))
+            print("  Expires: {}".format(result["expires_at"]))
+            print("  Device: {}".format(result["device_id"]))
+            print("  Pairing ID: {}".format(result["pairing_id"]))
+            print("Share this code only with the intended client.")
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
 
     if args.command == "diagnose":
         state_path = args.state_file or default_state_path()

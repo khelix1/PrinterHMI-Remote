@@ -17,10 +17,11 @@
 
 ## Phase 2 — secure enrollment
 
-- Formal threat model
-- Device key generation and protected storage
-- Expiring one-time pairing codes
-- Revocation, key rotation and audit events
+- [x] Formal threat model
+- [x] Ed25519 device key generation and protected local storage
+- [x] Expiring, attempt-limited one-time pairing codes
+- [x] Peer revocation, destructive key rotation and secret-free audit events
+- [ ] Relay challenge exchange and end-to-end enrollment field testing
 
 ## Phase 3 — remote monitoring
 

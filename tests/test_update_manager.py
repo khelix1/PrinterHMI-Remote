@@ -58,7 +58,7 @@ class UpdateManagerTests(unittest.TestCase):
 
     def test_requirements_file_is_tracked_for_future_dependencies(self):
         requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
-        self.assertIn("Python standard library", requirements)
+        self.assertIn("cryptography>=42,<47", requirements)
 
 
 if __name__ == "__main__":

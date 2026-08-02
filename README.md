@@ -79,6 +79,18 @@ Create a private, sanitized support bundle with one command:
 The bundle excludes raw telemetry and identifying printer, network and job data.
 See [Diagnostics](docs/DIAGNOSTICS.md) for its exact disclosure boundary.
 
+Create and inspect the host's protected Ed25519 device identity, then issue an
+expiring one-time pairing offer:
+
+```bash
+.venv/bin/printerhmi-agent enrollment identity
+.venv/bin/printerhmi-agent enrollment pair-create
+.venv/bin/printerhmi-agent enrollment peers
+```
+
+Pairing is local-only in Phase 2. It does not enable cloud connectivity or expose
+Moonraker. See [Secure enrollment threat model](docs/THREAT_MODEL.md).
+
 Register a pristine Git installation with Moonraker Update Manager:
 
 ```bash
