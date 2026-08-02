@@ -1,0 +1,31 @@
+[Unit]
+Description=PrinterHMI Remote read-only Moonraker monitor
+After=moonraker.service
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+Environment=HOME=@HOME_DIR@
+WorkingDirectory=@REPO_DIR@
+ExecStart=@AGENT@ run
+Restart=on-failure
+RestartSec=2
+UMask=0077
+
+# This milestone communicates only through local Unix sockets and writes only
+# its normalized state document.
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateNetwork=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=read-only
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=@STATE_DIR@
+
+[Install]
+WantedBy=multi-user.target

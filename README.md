@@ -32,6 +32,31 @@ For development deployment to a Klipper host, apply the tracked exclusions:
 rsync -av --filter="merge .rsync-filter" ./ user@printer:~/PrinterHMI-Remote/
 ```
 
+Stream normalized live telemetry from one local instance:
+
+```bash
+.venv/bin/printerhmi-agent monitor \
+  --socket "$HOME/printer_data/comms/moonraker.sock"
+```
+
+Run every discovered instance as a boot-persistent system service:
+
+```bash
+./install-service.sh
+sudo systemctl status printerhmi-remote.service
+```
+
+The installer runs the service with the invoking Klipper account rather than as
+root. Uninstalling the service retains its last normalized state document:
+
+```bash
+./uninstall-service.sh
+```
+
+The service opens no TCP listener. Its atomically replaced read-only snapshot is stored
+at `~/.local/state/printerhmi-remote/status.json` by default. Rapid Moonraker events
+are coalesced so persistent storage is updated at most once per second.
+
 Explicit socket paths may be supplied when an installation uses a custom layout:
 
 ```bash
