@@ -14,7 +14,9 @@ The foundation agent:
 - sends no printer data off the host;
 - reads Moonraker through explicitly discovered local Unix sockets;
 - exposes no printer-control commands;
-- serves local state only through a mode-0600 Unix socket with same-user peer checks.
+- serves local state only through a mode-0600 Unix socket with same-user peer checks;
+- accepts managed updates only from the configured canonical GitHub origin and only
+  when Moonraker validates a pristine checkout on `main`.
 
 Do not expose Moonraker ports or development agent interfaces to the public internet.
 

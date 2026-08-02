@@ -1,0 +1,12 @@
+# Managed by PrinterHMI Remote. Re-run install-update-manager.sh to repair.
+[update_manager printerhmi-remote]
+type: git_repo
+channel: dev
+path: @REPO_DIR@
+origin: https://github.com/khelix1/PrinterHMI-Remote.git
+primary_branch: main
+virtualenv: @VIRTUALENV@
+requirements: requirements.txt
+managed_services: printerhmi-remote
+info_tags:
+    desc=PrinterHMI Remote read-only monitoring agent

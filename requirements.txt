@@ -1,0 +1,2 @@
+# PrinterHMI Remote currently uses only the Python standard library.
+# This tracked file lets Moonraker safely manage future dependencies.

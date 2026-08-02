@@ -33,6 +33,7 @@ will be reconciled into the same catalog later.
 - `model.py` owns consumer-facing data structures.
 - `api.py` owns the same-user, read-only local consumer boundary.
 - `diagnostics.py` owns redaction, health summaries and private support bundles.
+- `packaging/moonraker/` owns the official Git-repository update contract.
 - `protocol/` owns versioned cross-process schemas.
 
 The P4 firmware is not an internet gateway. It will be an optional local client of

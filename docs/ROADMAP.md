@@ -13,7 +13,7 @@
 - Zeroconf and multi-instance reconciliation
 - Same-user authenticated local catalog and telemetry API
 - Installer, systemd service and privacy-preserving diagnostics
-- Moonraker Update Manager integration
+- Moonraker Update Manager integration through a pristine Git checkout
 
 ## Phase 2 — secure enrollment
 

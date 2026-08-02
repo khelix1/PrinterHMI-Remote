@@ -79,6 +79,15 @@ Create a private, sanitized support bundle with one command:
 The bundle excludes raw telemetry and identifying printer, network and job data.
 See [Diagnostics](docs/DIAGNOSTICS.md) for its exact disclosure boundary.
 
+Register a pristine Git installation with Moonraker Update Manager:
+
+```bash
+./install-update-manager.sh
+```
+
+See [Update Manager](docs/UPDATE_MANAGER.md) for multi-instance selection,
+the development-channel policy and removal instructions.
+
 Explicit socket paths may be supplied when an installation uses a custom layout:
 
 ```bash
