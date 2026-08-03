@@ -1,5 +1,16 @@
 # Architecture
 
+## Outbound relay process boundary
+
+`printerhmi-remote.service` discovers Moonraker Unix sockets, normalizes
+telemetry and serves the private same-user local API. It permanently retains
+`PrivateNetwork=true` and `RestrictAddressFamilies=AF_UNIX`.
+
+The optional `printerhmi-remote-relay.service` consumes only the local API and
+owns outbound TLS. It reuses the authenticated, privacy-filtering relay
+connector and writes only a small private health record. It never opens a
+listener and never receives a Moonraker socket path.
+
 ## Boundaries
 
 PrinterHMI Remote has three future runtime boundaries:

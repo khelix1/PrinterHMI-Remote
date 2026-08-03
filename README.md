@@ -1,5 +1,12 @@
 # PrinterHMI Remote
 
+The normal monitor remains local-only with `PrivateNetwork=true`. An operator
+may separately install the outbound TLS relay worker with an enabled relay
+configuration and the explicit `--enable-network` acknowledgement. The worker
+reads normalized state only through the private local API; it does not open a
+listener or connect to Moonraker. See
+[`docs/RELAY_WORKER.md`](docs/RELAY_WORKER.md).
+
 PrinterHMI Remote is the local-first foundation for secure remote monitoring of
 Klipper printers through Moonraker. It is designed to work with any compatible
 Klipper installation; PrinterHMI hardware is optional.

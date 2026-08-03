@@ -4,6 +4,11 @@
 
 ### Added
 
+- Added a separately installed outbound TLS relay worker that consumes only
+  the private local API.
+- Kept the Moonraker monitor permanently AF_UNIX-only and required explicit
+  configuration plus `--enable-network` before installing remote transport.
+
 - Established the standalone PrinterHMI Remote repository.
 - Added read-only discovery of local Moonraker Unix sockets.
 - Added stable per-instance identities and normalized catalog output.
