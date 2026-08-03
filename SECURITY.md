@@ -1,5 +1,10 @@
 # Security policy
 
+The default monitor has no IP networking. Outbound TLS is owned by the
+separate, disabled-by-default relay worker. Installing it requires an explicit
+enabled configuration and `--enable-network`; it has no Moonraker socket path
+and exposes no public listener.
+
 ## Supported versions
 
 PrinterHMI Remote is pre-alpha. No version is currently supported for production

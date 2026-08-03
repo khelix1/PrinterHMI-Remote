@@ -1,0 +1,33 @@
+[Unit]
+Description=PrinterHMI Remote opt-in outbound TLS relay worker
+After=printerhmi-remote.service network-online.target
+Wants=network-online.target
+Requires=printerhmi-remote.service
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+Environment=HOME=@HOME_DIR@
+WorkingDirectory=@REPO_DIR@
+ExecStart=@WORKER@ --config @CONFIG@ --api-socket @API_SOCKET@ --state-file @WORKER_STATE@
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+# This separate, opt-in process may make outbound TLS connections. It can
+# consume normalized state only through the same-user local agent API.
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=read-only
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadOnlyPaths=@CONFIG@ @CA_FILE@
+ReadWritePaths=@STATE_DIR@
+
+[Install]
+WantedBy=multi-user.target

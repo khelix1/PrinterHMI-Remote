@@ -30,7 +30,8 @@
 - [x] Disabled-by-default TLS connector and loopback relay simulator
 - [x] Certificate/hostname validation and signed session authentication
 - [x] Privacy-filtered envelopes, bounded queue and bounded retry policy
-- [ ] Production service integration with explicit operator enablement
+- [x] Separate opt-in relay service with explicit operator enablement
+- [ ] Field-test the worker against a production relay
 - [ ] Multi-tenant isolation
 - [ ] Read-only browser/PWA dashboard
 - [ ] Printer state, temperatures, progress, ETA and notifications
