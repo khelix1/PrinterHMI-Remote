@@ -29,6 +29,7 @@
 
 - [x] Disabled-by-default TLS connector and loopback relay simulator
 - [x] Certificate/hostname validation and signed session authentication
+- [x] TLS-protected device selection before addressed session challenges
 - [x] Privacy-filtered envelopes, bounded queue and bounded retry policy
 - [x] Separate opt-in relay service with explicit operator enablement
 - [ ] Field-test the worker against a production relay

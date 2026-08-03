@@ -3,6 +3,7 @@
   "$id": "https://github.com/khelix1/PrinterHMI-Remote/protocol/relay-session-v1.schema.json",
   "title": "PrinterHMI Remote authenticated relay session v1",
   "oneOf": [
+    { "$ref": "#/$defs/hello" },
     { "$ref": "#/$defs/challenge" },
     { "$ref": "#/$defs/authentication" },
     { "$ref": "#/$defs/ready" },
@@ -10,6 +11,16 @@
     { "$ref": "#/$defs/acknowledgement" }
   ],
   "$defs": {
+    "hello": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "device_id"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "agent.hello" },
+        "device_id": { "type": "string", "pattern": "^phm_[a-z2-7]{26}$" }
+      }
+    },
     "challenge": {
       "type": "object",
       "additionalProperties": false,

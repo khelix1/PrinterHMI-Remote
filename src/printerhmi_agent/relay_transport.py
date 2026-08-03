@@ -209,6 +209,31 @@ def retry_delays(attempts: int, base: float = 1.0, maximum: float = 30.0) -> Lis
     return [min(maximum, base * (2 ** attempt)) for attempt in range(attempts)]
 
 
+def create_agent_hello(store: EnrollmentStore) -> dict:
+    identity = store.identity()
+    return {
+        "protocol_version": PROTOCOL_VERSION,
+        "type": "agent.hello",
+        "device_id": identity["device_id"],
+    }
+
+
+def validate_agent_hello(document: dict, expected_device_id: str = None) -> str:
+    if (
+        not isinstance(document, dict)
+        or set(document) != {"protocol_version", "type", "device_id"}
+        or document.get("protocol_version") != PROTOCOL_VERSION
+        or document.get("type") != "agent.hello"
+    ):
+        raise RelayTransportError("invalid agent hello")
+    device_id = document.get("device_id")
+    if not isinstance(device_id, str) or not DEVICE_ID_PATTERN.fullmatch(device_id):
+        raise RelayTransportError("invalid agent hello identity")
+    if expected_device_id is not None and device_id != expected_device_id:
+        raise RelayTransportError("agent hello identity is not enrolled")
+    return device_id
+
+
 def create_session_challenge(
     device_id: str,
     relay_id: str,
@@ -457,6 +482,7 @@ class RelayConnector:
                 ),
                 timeout=self.config.connect_timeout,
             )
+            await write_frame(writer, create_agent_hello(self.enrollment_store))
             challenge = await read_frame(reader, self.config.connect_timeout)
             authentication = sign_session_challenge(
                 self.enrollment_store,

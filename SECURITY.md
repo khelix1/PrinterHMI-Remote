@@ -20,7 +20,8 @@ The foundation agent:
 - authenticates offline relay transcripts with domain-separated Ed25519 signatures;
 - persists consumed challenge IDs so successful enrollment cannot be replayed;
 - includes a disabled-by-default TLS test connector with CA and hostname
-  verification, signed session authentication and privacy-filtered payloads;
+  verification, TLS-protected enrolled-device selection, signed session
+  authentication and privacy-filtered payloads;
 - makes no cloud connection;
 - sends no printer data off the host;
 - reads Moonraker through explicitly discovered local Unix sockets;

@@ -42,7 +42,8 @@ will be reconciled into the same catalog later.
 - `identity.py` owns stable local instance identity.
 - `enrollment.py` owns device keys, one-time pairing, signed relay challenges, peer key proof, replay tracking, signed receipts, revocation and audit events.
 - `relay_transport.py` owns TLS client validation, signed session authentication,
-  privacy filtering, bounded queuing and retry policy.
+  TLS-protected device selection, privacy filtering, bounded queuing and retry
+  policy.
 - `relay_simulator.py` owns the loopback-only protocol test server.
 - `moonraker.py` owns JSON-RPC framing and transport.
 - `catalog.py` owns normalized instance inspection.

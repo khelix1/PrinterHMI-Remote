@@ -12,6 +12,7 @@ namespace or Internet address family access.
 | --- | --- |
 | Relay server impersonation | Certificate-chain and hostname verification against an explicit CA file before protocol exchange |
 | Relay identifier substitution | Signed session challenge relay ID must exactly match local configuration |
+| Device-selection confusion | Agent sends only its pseudonymous device ID after TLS server authentication; the relay must reject unknown IDs and select the enrolled public key before issuing a challenge |
 | Agent impersonation | Agent signs a fresh, audience-bound challenge with its protected Ed25519 device key |
 | Authentication replay | Each TLS connection receives a unique session UUID and 256-bit nonce with a maximum 120-second lifetime |
 | Protocol confusion | Session authentication uses its own NUL-terminated domain separator and strict message shapes |
