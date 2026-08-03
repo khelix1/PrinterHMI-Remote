@@ -15,8 +15,10 @@ The repository currently provides a **read-only local agent foundation**:
 - normalized discovery output for future P4, relay and web consumers;
 - no inbound LAN listener, cloud connection or printer-control surface.
 
-Remote access is intentionally not implemented until the pairing protocol and
-threat model are reviewed.
+Remote access remains disabled in the production service. The repository now
+includes an isolated TLS connector and loopback relay simulator so certificate,
+session-authentication, privacy and resource limits can be tested before that
+boundary is opened.
 
 ## Quick start
 
@@ -98,6 +100,13 @@ JSON transcript. It does not enable cloud connectivity or expose Moonraker:
 
 See the [relay enrollment protocol](docs/RELAY_ENROLLMENT_PROTOCOL.md) and
 [secure enrollment threat model](docs/THREAT_MODEL.md).
+
+The next transport layer is also testable without modifying the production
+service. Its example configuration is disabled by default, TLS validates an
+explicit CA and hostname, the agent signs every new session challenge, and
+privacy filtering removes local paths and print identity before transmission.
+See the [TLS transport foundation](docs/TLS_TRANSPORT_FOUNDATION.md) and
+[outbound transport threat model](docs/TRANSPORT_THREAT_MODEL.md).
 
 Register a pristine Git installation with Moonraker Update Manager:
 

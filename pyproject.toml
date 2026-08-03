@@ -21,6 +21,7 @@ dependencies = ["cryptography>=42,<47"]
 
 [project.scripts]
 printerhmi-agent = "printerhmi_agent.cli:main"
+printerhmi-relay-sim = "printerhmi_agent.relay_simulator:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

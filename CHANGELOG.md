@@ -36,3 +36,8 @@
   signed enrollment receipts and persisted replay protection.
 - Added versioned relay transcript schemas and offline CLI seams without enabling
   any TCP listener or outbound relay transport.
+- Added a disabled-by-default TLS connector and loopback relay simulator with
+  certificate and hostname verification plus signed Ed25519 session challenges.
+- Added privacy-filtered telemetry envelopes, strict frame limits, bounded
+  latest-state queuing and bounded reconnect delays while retaining the
+  production service's private network namespace and AF_UNIX-only policy.

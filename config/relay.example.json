@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "enabled": false,
+  "relay_id": "local-relay",
+  "host": "127.0.0.1",
+  "port": 8443,
+  "server_name": "localhost",
+  "ca_file": "local-relay-ca.pem",
+  "queue_capacity": 8,
+  "connect_timeout": 5.0
+}

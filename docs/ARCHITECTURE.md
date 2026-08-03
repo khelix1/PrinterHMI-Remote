@@ -8,7 +8,8 @@ PrinterHMI Remote has three future runtime boundaries:
 2. **Relay** — accepts outbound authenticated agent connections and isolates tenants.
 3. **Client** — browser, phone, or PrinterHMI P4 consuming normalized state.
 
-The local agent and its offline signed relay-enrollment boundary now exist; the network relay and client remain future components.
+The local agent, signed relay enrollment and isolated TLS transport harness now
+exist. The production network relay and client remain future components.
 
 ## Local data flow
 
@@ -29,6 +30,9 @@ will be reconciled into the same catalog later.
 - `discovery.py` owns candidate socket enumeration.
 - `identity.py` owns stable local instance identity.
 - `enrollment.py` owns device keys, one-time pairing, signed relay challenges, peer key proof, replay tracking, signed receipts, revocation and audit events.
+- `relay_transport.py` owns TLS client validation, signed session authentication,
+  privacy filtering, bounded queuing and retry policy.
+- `relay_simulator.py` owns the loopback-only protocol test server.
 - `moonraker.py` owns JSON-RPC framing and transport.
 - `catalog.py` owns normalized instance inspection.
 - `model.py` owns consumer-facing data structures.
@@ -37,6 +41,12 @@ will be reconciled into the same catalog later.
 - `packaging/moonraker/` owns the official Git-repository update contract.
 - `protocol/` owns versioned cross-process schemas.
 - `docs/RELAY_ENROLLMENT_PROTOCOL.md` owns canonical signing and transcript semantics.
+- `docs/TLS_TRANSPORT_FOUNDATION.md` owns isolated transport behavior and gates.
+
+The production `run` service does not instantiate the relay connector. Network
+access cannot be enabled accidentally by placing a configuration file because
+the systemd unit still creates a private network namespace and allows only
+`AF_UNIX`.
 
 The P4 firmware is not an internet gateway. It will be an optional local client of
 the agent and will continue talking directly to Moonraker for operational control.

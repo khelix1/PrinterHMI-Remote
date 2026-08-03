@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/khelix1/PrinterHMI-Remote/protocol/relay-session-v1.schema.json",
+  "title": "PrinterHMI Remote authenticated relay session v1",
+  "oneOf": [
+    { "$ref": "#/$defs/challenge" },
+    { "$ref": "#/$defs/authentication" },
+    { "$ref": "#/$defs/ready" },
+    { "$ref": "#/$defs/telemetry" },
+    { "$ref": "#/$defs/acknowledgement" }
+  ],
+  "$defs": {
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "session_id", "relay_id", "nonce", "audience", "issued_at", "expires_at"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "relay.session-challenge" },
+        "session_id": { "type": "string", "format": "uuid" },
+        "relay_id": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,64}$" },
+        "nonce": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "audience": { "type": "string", "pattern": "^phm_[a-z2-7]{26}$" },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "challenge", "device_id", "device_public_key", "signed_at", "signature"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "agent.session-auth" },
+        "challenge": { "$ref": "#/$defs/challenge" },
+        "device_id": { "type": "string", "pattern": "^phm_[a-z2-7]{26}$" },
+        "device_public_key": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "signed_at": { "type": "string", "format": "date-time" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9_-]{86}$" }
+      }
+    },
+    "ready": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "session_id", "challenge_id", "relay_id", "accepted_at"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "relay.session-ready" },
+        "session_id": { "type": "string", "format": "uuid" },
+        "challenge_id": { "type": "string", "format": "uuid" },
+        "relay_id": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,64}$" },
+        "accepted_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "session_id", "sequence", "snapshot"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "agent.telemetry" },
+        "session_id": { "type": "string", "format": "uuid" },
+        "sequence": { "type": "integer", "minimum": 1 },
+        "snapshot": { "type": "object" }
+      }
+    },
+    "acknowledgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol_version", "type", "session_id", "sequence"],
+      "properties": {
+        "protocol_version": { "const": 1 },
+        "type": { "const": "relay.telemetry-ack" },
+        "session_id": { "type": "string", "format": "uuid" },
+        "sequence": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

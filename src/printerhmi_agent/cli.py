@@ -11,6 +11,7 @@ from .diagnostics import collect_diagnostics, write_support_bundle
 from .discovery import discover_socket_paths
 from .enrollment import DEFAULT_PAIRING_TTL, EnrollmentError, EnrollmentStore
 from .monitor import snapshots
+from .relay_transport import RelayConfig, RelayConnector, RelayTransportError
 from .service import default_state_path, run_service
 
 
@@ -80,6 +81,12 @@ def main(argv: Sequence[str] = None) -> int:
     )
     enrollment.add_argument("--confirm", action="store_true")
     enrollment.add_argument("--json", action="store_true")
+    relay_test = subparsers.add_parser(
+        "relay-test",
+        help="send one snapshot through the isolated outbound TLS connector",
+    )
+    relay_test.add_argument("--config", type=Path, required=True)
+    relay_test.add_argument("--snapshot", type=Path, required=True)
     args = parser.parse_args(argv)
 
     if args.command == "discover":
@@ -227,6 +234,18 @@ def main(argv: Sequence[str] = None) -> int:
         if bundle is not None:
             print("Support bundle: {}".format(bundle))
         return 0 if report["local_api"]["available"] else 1
+
+    if args.command == "relay-test":
+        try:
+            config = RelayConfig.load(args.config)
+            with args.snapshot.open("r", encoding="utf-8") as snapshot_file:
+                snapshot = json.load(snapshot_file)
+            result = asyncio.run(RelayConnector(config).send_with_retries(snapshot))
+        except (RelayTransportError, OSError, json.JSONDecodeError) as exc:
+            print("ERROR: relay test: {}".format(exc), file=sys.stderr)
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
 
     parser.error("unknown command")
     return 2
