@@ -18,10 +18,12 @@ from printerhmi_agent.relay_transport import (
     RelayConfig,
     RelayConnector,
     RelayTransportError,
+    create_agent_hello,
     create_session_challenge,
     retry_delays,
     sanitize_snapshot,
     sign_session_challenge,
+    validate_agent_hello,
     verify_session_auth,
 )
 
@@ -201,6 +203,21 @@ class RelayTransportTests(unittest.TestCase):
     def test_retry_policy_is_bounded(self):
         self.assertEqual(retry_delays(7), [1.0, 2.0, 4.0, 8.0, 16.0, 30.0, 30.0])
 
+    def test_agent_hello_is_strict_and_bound_to_enrolled_identity(self):
+        store = EnrollmentStore(self.directory / "enrollment")
+        hello = create_agent_hello(store)
+        device_id = store.identity()["device_id"]
+        self.assertEqual(validate_agent_hello(hello, device_id), device_id)
+
+        extra = dict(hello)
+        extra["hostname"] = "private-host"
+        with self.assertRaisesRegex(RelayTransportError, "invalid agent hello"):
+            validate_agent_hello(extra, device_id)
+
+        other = EnrollmentStore(self.directory / "other-enrollment")
+        with self.assertRaisesRegex(RelayTransportError, "not enrolled"):
+            validate_agent_hello(hello, other.identity()["device_id"])
+
     def test_session_authentication_rejects_transcript_tampering(self):
         store = EnrollmentStore(self.directory / "enrollment")
         challenge = create_session_challenge(
@@ -267,6 +284,30 @@ class RelayTransportTests(unittest.TestCase):
                 await simulator.close()
         asyncio.run(exercise())
 
+    def test_simulator_rejects_unenrolled_agent_before_challenge(self):
+        async def exercise():
+            ca_path, cert_path, key_path = make_certificates(self.directory)
+            enrolled = EnrollmentStore(self.directory / "enrolled")
+            unknown = EnrollmentStore(self.directory / "unknown")
+            simulator = RelaySimulator(
+                cert_path, key_path, enrolled.identity()["device_id"]
+            )
+            await simulator.start()
+            try:
+                _host, port = simulator.address
+                with self.assertRaises(RelayTransportError):
+                    await RelayConnector(
+                        self.config(ca_path, port), unknown
+                    ).send_snapshot(snapshot_document())
+                await asyncio.sleep(0)
+                self.assertTrue(
+                    any("not enrolled" in error for error in simulator.errors)
+                )
+                self.assertEqual(simulator.received, [])
+            finally:
+                await simulator.close()
+        asyncio.run(exercise())
+
     def test_untrusted_certificate_is_rejected(self):
         async def exercise():
             _ca_path, cert_path, key_path = make_certificates(self.directory, "real")
@@ -315,6 +356,7 @@ class RelayTransportTests(unittest.TestCase):
         schema = json.loads(
             (root / "protocol/relay-session-v1.schema.json").read_text()
         )
+        self.assertEqual(schema["$defs"]["hello"]["additionalProperties"], False)
         example = json.loads((root / "config/relay.example.json").read_text())
         self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
         self.assertFalse(example["enabled"])

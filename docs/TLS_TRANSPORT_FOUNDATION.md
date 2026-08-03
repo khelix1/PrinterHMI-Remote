@@ -23,13 +23,17 @@ unit remains `PrivateNetwork=true` and `RestrictAddressFamilies=AF_UNIX`.
 
 1. TLS verifies the configured CA and `server_name` before application data is
    accepted. TLS 1.2 is the minimum protocol version.
-2. The relay sends a fresh 256-bit nonce in a challenge addressed to the stable
-   PrinterHMI device ID and expiring within 120 seconds.
-3. The agent verifies the configured relay ID, audience and timestamps, then
+2. Inside the verified TLS channel, the agent sends its pseudonymous device ID.
+   This lets a multi-device relay select the enrolled public key without
+   exposing the identifier before TLS authentication.
+3. The relay sends a fresh 256-bit nonce in a challenge addressed to that
+   enrolled device ID and expiring within 120 seconds.
+4. The agent verifies the configured relay ID, audience and timestamps, then
    signs the canonical challenge transcript using:
    `PrinterHMI Remote relay session authentication v1\0`.
-4. The relay verifies the Ed25519 signature and confirms the exact session.
-5. The agent sends one sequence-numbered, read-only snapshot and requires an
+5. The relay verifies the Ed25519 signature against the enrolled public key and
+   confirms the exact session.
+6. The agent sends one sequence-numbered, read-only snapshot and requires an
    acknowledgement for that session and sequence.
 
 Every new TLS connection receives a new challenge. An authentication response

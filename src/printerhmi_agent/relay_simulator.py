@@ -14,6 +14,7 @@ from .relay_transport import (
     RelayTransportError,
     create_session_challenge,
     read_frame,
+    validate_agent_hello,
     verify_session_auth,
     write_frame,
 )
@@ -76,6 +77,8 @@ class RelaySimulator:
         writer: asyncio.StreamWriter,
     ) -> None:
         try:
+            hello = await read_frame(reader)
+            validate_agent_hello(hello, self.device_id)
             challenge = create_session_challenge(self.device_id, self.relay_id)
             session_id = challenge["session_id"]
             if session_id in self._issued_sessions:

@@ -4,6 +4,9 @@
 
 ### Added
 
+- Added a TLS-protected agent hello so a multi-device relay can select the
+  enrolled public key before issuing a device-addressed session challenge.
+
 - Added a separately installed outbound TLS relay worker that consumes only
   the private local API.
 - Kept the Moonraker monitor permanently AF_UNIX-only and required explicit
