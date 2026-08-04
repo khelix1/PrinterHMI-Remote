@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "enabled": false,
+  "relay_id": "local-relay",
+  "listen_host": "127.0.0.1",
+  "listen_port": 8443,
+  "api_socket": "~/.local/state/printerhmi-remote/relay-receiver.sock",
+  "state_file": "~/.local/state/printerhmi-remote/relay-receiver.json",
+  "cert_file": "relay-server.pem",
+  "key_file": "relay-server-key.pem",
+  "stale_after": 30,
+  "devices": [
+    {
+      "device_id": "phm_mzuhvlpymk6xo3epygfy5h4oea",
+      "public_key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+  ]
+}

@@ -20,6 +20,9 @@ namespace or Internet address family access.
 | Memory exhaustion | Frames are capped at 256 KiB and the latest-state queue is bounded to at most 64 entries |
 | Retry storm | Connection timeout is bounded and retry delay grows exponentially to a 30-second ceiling |
 | Accidental production exposure | Example configuration is disabled; production service retains `PrivateNetwork=true` and `AF_UNIX` only |
+| Unknown device ingestion | Receiver selects only configured device IDs and requires the session public key to exactly match the enrolled key |
+| Receiver data accumulation | Registry atomically replaces one latest snapshot per device and keeps no history |
+| Premature public exposure | Receiver foundation rejects non-loopback listener addresses and exposes its read API only through a same-user mode-0600 Unix socket |
 
 ## Not yet claimed
 

@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added a disabled-by-default, loopback-only relay receiver with enrolled-key
+  authentication, latest-snapshot storage and a private read-only Unix API.
+- Kept every component in one package build while requiring separate explicit
+  service activation for monitor, outbound-worker and receiver roles.
 - Added a TLS-protected agent hello so a multi-device relay can select the
   enrolled public key before issuing a device-addressed session challenge.
 
