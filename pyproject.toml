@@ -24,6 +24,7 @@ printerhmi-agent = "printerhmi_agent.cli:main"
 printerhmi-relay-sim = "printerhmi_agent.relay_simulator:main"
 printerhmi-relay-worker = "printerhmi_agent.relay_worker:main"
 printerhmi-relay-receiver = "printerhmi_agent.relay_receiver:main"
+printerhmi-relay-config = "printerhmi_agent.relay_configuration:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

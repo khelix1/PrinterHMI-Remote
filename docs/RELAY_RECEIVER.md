@@ -17,9 +17,10 @@ a public service. It is built and installed with the rest of the repository by
 
 ## Role-specific installation
 
-Copy `config/relay-receiver.example.json` outside the repository, provide a
-private TLS certificate and key, add real enrolled devices and set `enabled` to
-`true`. The listener remains loopback-only at this milestone.
+Use `printerhmi-relay-config` to generate private TLS material, enroll devices
+from signed receipts and explicitly enable the configuration. Do not manually
+copy public keys into the example JSON. The listener remains loopback-only at
+this milestone. See [relay configuration and enrollment](RELAY_CONFIGURATION.md).
 
 ```bash
 ./install.sh

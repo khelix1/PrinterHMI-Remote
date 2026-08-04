@@ -10,6 +10,13 @@ loopback TLS listener. Its service installer requires `--enable-listener`, its
 device allowlist binds stable device IDs to enrolled Ed25519 public keys, and
 its local read API is a same-user mode-0600 Unix socket.
 
+Receiver configuration is generated under a mode-0700 directory. Private CA,
+TLS and enrollment keys, enrollment requests and configuration files use mode
+0600. Devices enter the allowlist only through a valid signed receipt matching
+the local relay identity and a pending one-time challenge. Initialization never
+overwrites a non-empty directory and configuration changes are lock-protected
+and atomically replaced.
+
 ## Supported versions
 
 PrinterHMI Remote is pre-alpha. No version is currently supported for production

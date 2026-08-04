@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added atomic, lock-protected relay configuration tooling that generates
+  private local TLS material and a disabled loopback receiver configuration.
+- Added signed-receipt-only device enrollment, pending-challenge binding,
+  explicit enable/disable and confirmed allowlist removal commands.
 - Added a disabled-by-default, loopback-only relay receiver with enrolled-key
   authentication, latest-snapshot storage and a private read-only Unix API.
 - Kept every component in one package build while requiring separate explicit

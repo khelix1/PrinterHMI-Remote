@@ -33,6 +33,7 @@
 - [x] Privacy-filtered envelopes, bounded queue and bounded retry policy
 - [x] Separate opt-in relay service with explicit operator enablement
 - [x] Loopback relay receiver with enrolled-key authentication and latest state
+- [x] Private TLS/config generation and signed-receipt allowlist tooling
 - [ ] Field-test the worker against a production relay
 - [ ] Multi-tenant isolation
 - [ ] Read-only browser/PWA dashboard
