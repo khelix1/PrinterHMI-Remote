@@ -11,6 +11,12 @@ owns outbound TLS. It reuses the authenticated, privacy-filtering relay
 connector and writes only a small private health record. It never opens a
 listener and never receives a Moonraker socket path.
 
+The optional `printerhmi-relay-receiver.service` is a distinct runtime role
+from the printer-side services but is built from the same repository and Python
+package. At this foundation stage it binds TLS only on loopback, authenticates
+an explicit device allowlist, retains one latest snapshot per device and serves
+only a private same-user Unix API.
+
 ## Boundaries
 
 PrinterHMI Remote has three future runtime boundaries:
@@ -45,6 +51,10 @@ will be reconciled into the same catalog later.
   TLS-protected device selection, privacy filtering, bounded queuing and retry
   policy.
 - `relay_simulator.py` owns the loopback-only protocol test server.
+- `relay_receiver.py` owns enrolled-device TLS ingestion and the private relay
+  read API.
+- `relay_registry.py` owns latest-snapshot-only relay state and atomic private
+  persistence.
 - `moonraker.py` owns JSON-RPC framing and transport.
 - `catalog.py` owns normalized instance inspection.
 - `model.py` owns consumer-facing data structures.

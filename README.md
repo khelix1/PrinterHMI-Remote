@@ -11,6 +11,11 @@ PrinterHMI Remote is the local-first foundation for secure remote monitoring of
 Klipper printers through Moonraker. It is designed to work with any compatible
 Klipper installation; PrinterHMI hardware is optional.
 
+One `./install.sh` build installs every command-line component from this
+repository. Runtime roles remain explicitly separate: the printer monitor is
+the default service, while the outbound worker and loopback relay receiver each
+require their own enabled configuration and confirmation flag.
+
 ## Current milestone
 
 The repository currently provides a **read-only local agent foundation**:
@@ -26,6 +31,11 @@ Remote access remains disabled in the production service. The repository now
 includes an isolated TLS connector and loopback relay simulator so certificate,
 session-authentication, privacy and resource limits can be tested before that
 boundary is opened.
+
+The repository also includes a disabled-by-default loopback relay receiver. It
+authenticates enrolled devices, retains only their latest privacy-filtered
+snapshot and exposes that state through a mode-0600 local Unix socket. See
+[Relay receiver](docs/RELAY_RECEIVER.md).
 
 ## Quick start
 

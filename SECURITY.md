@@ -5,6 +5,11 @@ separate, disabled-by-default relay worker. Installing it requires an explicit
 enabled configuration and `--enable-network`; it has no Moonraker socket path
 and exposes no public listener.
 
+The receiver foundation is also disabled by default and restricted to a
+loopback TLS listener. Its service installer requires `--enable-listener`, its
+device allowlist binds stable device IDs to enrolled Ed25519 public keys, and
+its local read API is a same-user mode-0600 Unix socket.
+
 ## Supported versions
 
 PrinterHMI Remote is pre-alpha. No version is currently supported for production
