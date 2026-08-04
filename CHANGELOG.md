@@ -4,6 +4,10 @@
 
 ### Added
 
+- Made the existing `printerhmi-agent` command the stable dispatcher for all
+  relay roles so Moonraker source updates do not depend on regenerating new
+  editable-install console-script wrappers.
+
 - Added atomic, lock-protected relay configuration tooling that generates
   private local TLS material and a disabled loopback receiver configuration.
 - Added signed-receipt-only device enrollment, pending-challenge binding,

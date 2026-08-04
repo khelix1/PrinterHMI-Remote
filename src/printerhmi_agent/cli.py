@@ -16,6 +16,24 @@ from .service import default_state_path, run_service
 
 
 def main(argv: Sequence[str] = None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+
+    # This launcher exists on every managed installation. Moonraker's git_repo
+    # updater refreshes source and requirements, but it does not regenerate
+    # newly added editable-install console-script wrappers. Keep every role
+    # reachable through this stable launcher so managed updates are complete.
+    component_commands = {
+        "relay-config": "printerhmi_agent.relay_configuration",
+        "relay-receiver": "printerhmi_agent.relay_receiver",
+        "relay-worker": "printerhmi_agent.relay_worker",
+        "relay-sim": "printerhmi_agent.relay_simulator",
+    }
+    if arguments and arguments[0] in component_commands:
+        from importlib import import_module
+
+        component = import_module(component_commands[arguments[0]])
+        return component.main(arguments[1:])
+
     parser = argparse.ArgumentParser(prog="printerhmi-agent")
     subparsers = parser.add_subparsers(dest="command", required=True)
     discover = subparsers.add_parser(
@@ -87,7 +105,7 @@ def main(argv: Sequence[str] = None) -> int:
     )
     relay_test.add_argument("--config", type=Path, required=True)
     relay_test.add_argument("--snapshot", type=Path, required=True)
-    args = parser.parse_args(argv)
+    args = parser.parse_args(arguments)
 
     if args.command == "discover":
         paths = discover_socket_paths(explicit=args.socket)

@@ -1,4 +1,6 @@
 import asyncio
+import contextlib
+import io
 import json
 import os
 import ssl
@@ -11,6 +13,7 @@ from cryptography import x509
 from cryptography.x509.oid import ExtendedKeyUsageOID
 
 from printerhmi_agent.enrollment import EnrollmentStore
+from printerhmi_agent.cli import main as agent_main
 from printerhmi_agent.relay_configuration import (
     CA_NAME,
     CA_KEY_NAME,
@@ -195,6 +198,21 @@ class RelayConfigurationTests(unittest.TestCase):
         state = json.loads((self.directory / STATE_NAME).read_text())
         self.assertNotIn(state["peer_private_key"], serialized)
         self.assertNotIn("peer_private_key", serialized)
+
+    def test_stable_agent_launcher_dispatches_relay_configuration(self):
+        self.initialize()
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            result = agent_main(
+                [
+                    "relay-config",
+                    "status",
+                    "--directory",
+                    str(self.directory),
+                ]
+            )
+        self.assertEqual(result, 0)
+        self.assertEqual(json.loads(output.getvalue())["relay_id"], "relay-test")
 
     def test_request_refuses_expired_or_overwritten_pairing_material(self):
         self.initialize()

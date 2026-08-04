@@ -42,7 +42,8 @@ done
 }
 config="$(readlink -f "$config")"
 [[ -f "$config" ]] || { echo "ERROR: config not found: $config" >&2; exit 1; }
-[[ -x "$repo_dir/.venv/bin/printerhmi-relay-worker" ]] || {
+agent="$repo_dir/.venv/bin/printerhmi-agent"
+[[ -x "$agent" ]] || {
     echo "ERROR: run ./install.sh first" >&2
     exit 1
 }
@@ -59,7 +60,7 @@ unit_temp="$(mktemp)"
 trap 'rm -f "$unit_temp"' EXIT
 
 sudo -u "$service_user" env HOME="$home_dir" \
-    "$repo_dir/.venv/bin/printerhmi-relay-worker" \
+    "$agent" relay-worker \
     --config "$config" --validate-config
 
 ca_file="$(sudo -u "$service_user" env HOME="$home_dir" \
@@ -69,7 +70,7 @@ ca_file="$(sudo -u "$service_user" env HOME="$home_dir" \
 
 sed \
     -e "s|@REPO_DIR@|$repo_dir|g" \
-    -e "s|@WORKER@|$repo_dir/.venv/bin/printerhmi-relay-worker|g" \
+    -e "s|@AGENT@|$agent|g" \
     -e "s|@SERVICE_USER@|$service_user|g" \
     -e "s|@SERVICE_GROUP@|$service_group|g" \
     -e "s|@HOME_DIR@|$home_dir|g" \

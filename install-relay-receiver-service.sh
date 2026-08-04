@@ -42,8 +42,8 @@ done
 }
 config="$(readlink -f "$config")"
 [[ -f "$config" ]] || { echo "ERROR: config not found: $config" >&2; exit 1; }
-receiver="$repo_dir/.venv/bin/printerhmi-relay-receiver"
-[[ -x "$receiver" ]] || { echo "ERROR: run ./install.sh first" >&2; exit 1; }
+agent="$repo_dir/.venv/bin/printerhmi-agent"
+[[ -x "$agent" ]] || { echo "ERROR: run ./install.sh first" >&2; exit 1; }
 
 passwd_entry="$(getent passwd "$service_user")"
 [[ -n "$passwd_entry" ]] || {
@@ -54,7 +54,7 @@ home_dir="$(printf '%s\n' "$passwd_entry" | cut -d: -f6)"
 service_group="$(id -gn "$service_user")"
 
 sudo -u "$service_user" env HOME="$home_dir" \
-    "$receiver" --config "$config" --validate-config
+    "$agent" relay-receiver --config "$config" --validate-config
 
 mapfile -t config_values < <(
     sudo -u "$service_user" env HOME="$home_dir" \
@@ -82,7 +82,7 @@ trap 'rm -f "$unit_temp"' EXIT
 
 sed \
     -e "s|@REPO_DIR@|$repo_dir|g" \
-    -e "s|@RECEIVER@|$receiver|g" \
+    -e "s|@AGENT@|$agent|g" \
     -e "s|@SERVICE_USER@|$service_user|g" \
     -e "s|@SERVICE_GROUP@|$service_group|g" \
     -e "s|@HOME_DIR@|$home_dir|g" \
@@ -102,7 +102,8 @@ ready=false
 for _attempt in {1..40}; do
     if sudo systemctl is-active --quiet "$service_name" &&
        sudo -u "$service_user" env HOME="$home_dir" \
-         "$receiver" --config "$config" --api health >/dev/null 2>&1; then
+         "$agent" relay-receiver --config "$config" \
+           --api health >/dev/null 2>&1; then
         ready=true
         break
     fi
