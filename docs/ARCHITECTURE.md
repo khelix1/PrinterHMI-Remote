@@ -55,6 +55,9 @@ will be reconciled into the same catalog later.
   read API.
 - `relay_registry.py` owns latest-snapshot-only relay state and atomic private
   persistence.
+- `relay_configuration.py` owns private local CA/server certificate generation,
+  relay enrollment identity, signed-receipt allowlist changes and explicit
+  receiver enablement.
 - `moonraker.py` owns JSON-RPC framing and transport.
 - `catalog.py` owns normalized instance inspection.
 - `model.py` owns consumer-facing data structures.
@@ -64,6 +67,8 @@ will be reconciled into the same catalog later.
 - `protocol/` owns versioned cross-process schemas.
 - `docs/RELAY_ENROLLMENT_PROTOCOL.md` owns canonical signing and transcript semantics.
 - `docs/TLS_TRANSPORT_FOUNDATION.md` owns isolated transport behavior and gates.
+- `docs/RELAY_CONFIGURATION.md` owns the operator enrollment and receiver
+  configuration workflow.
 
 The production `run` service does not instantiate the relay connector. Network
 access cannot be enabled accidentally by placing a configuration file because

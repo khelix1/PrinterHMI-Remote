@@ -110,8 +110,10 @@ class RelayReceiverConfig:
         ):
             raise RelayReceiverError("invalid receiver stale interval")
         raw_devices = document.get("devices")
-        if not isinstance(raw_devices, list) or not 1 <= len(raw_devices) <= 10000:
+        if not isinstance(raw_devices, list) or len(raw_devices) > 10000:
             raise RelayReceiverError("receiver requires enrolled devices")
+        if enabled and not raw_devices:
+            raise RelayReceiverError("enabled receiver requires enrolled devices")
         devices = {}
         for item in raw_devices:
             if not isinstance(item, dict) or set(item) != {"device_id", "public_key"}:

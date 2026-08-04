@@ -23,6 +23,9 @@ namespace or Internet address family access.
 | Unknown device ingestion | Receiver selects only configured device IDs and requires the session public key to exactly match the enrolled key |
 | Receiver data accumulation | Registry atomically replaces one latest snapshot per device and keeps no history |
 | Premature public exposure | Receiver foundation rejects non-loopback listener addresses and exposes its read API only through a same-user mode-0600 Unix socket |
+| Manual key substitution | Configurator accepts only a device-signed receipt bound to the local relay peer key and a pending challenge; bare public keys are rejected |
+| Configuration race or partial write | Mutations use an exclusive local lock, validate candidates and atomically replace mode-0600 configuration files |
+| Accidental key overwrite | Initialization refuses non-empty directories and enablement requires a verified device plus explicit confirmation |
 
 ## Not yet claimed
 
