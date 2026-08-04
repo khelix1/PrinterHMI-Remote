@@ -8,7 +8,7 @@ User=@SERVICE_USER@
 Group=@SERVICE_GROUP@
 Environment=HOME=@HOME_DIR@
 WorkingDirectory=@REPO_DIR@
-ExecStart=@RECEIVER@ --config @CONFIG@
+ExecStart=@AGENT@ relay-receiver --config @CONFIG@
 Restart=on-failure
 RestartSec=5
 UMask=0077

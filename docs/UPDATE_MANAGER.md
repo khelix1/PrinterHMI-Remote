@@ -32,7 +32,12 @@ should move to `stable` only after PrinterHMI Remote publishes its first reviewe
 release tag.
 
 Moonraker updates the repository and tracked Python requirements, then restarts
-only `printerhmi-remote`. It does not restart Klipper or expose Moonraker publicly.
+only `printerhmi-remote`. It does not regenerate new editable-install console
+script wrappers on every Git update. Update-critical services and operator
+workflows therefore dispatch through the original `printerhmi-agent` launcher,
+which loads current source directly. Newly added convenience wrappers appear
+after a full `./install.sh`, but are never required for a managed update.
+Moonraker does not restart Klipper or expose Moonraker publicly.
 
 Remove only the Update Manager registration with:
 

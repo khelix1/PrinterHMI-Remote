@@ -17,7 +17,7 @@ a public service. It is built and installed with the rest of the repository by
 
 ## Role-specific installation
 
-Use `printerhmi-relay-config` to generate private TLS material, enroll devices
+Use `printerhmi-agent relay-config` to generate private TLS material, enroll devices
 from signed receipts and explicitly enable the configuration. Do not manually
 copy public keys into the example JSON. The listener remains loopback-only at
 this milestone. See [relay configuration and enrollment](RELAY_CONFIGURATION.md).
@@ -32,7 +32,7 @@ this milestone. See [relay configuration and enrollment](RELAY_CONFIGURATION.md)
 Inspect its private API on the receiver host:
 
 ```bash
-.venv/bin/printerhmi-relay-receiver \
+.venv/bin/printerhmi-agent relay-receiver \
   --config /absolute/path/relay-receiver.json \
   --api health
 ```

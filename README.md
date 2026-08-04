@@ -37,10 +37,13 @@ authenticates enrolled devices, retains only their latest privacy-filtered
 snapshot and exposes that state through a mode-0600 local Unix socket. See
 [Relay receiver](docs/RELAY_RECEIVER.md).
 
-The shared package now includes `printerhmi-relay-config`, which generates the
+The update-stable `printerhmi-agent relay-config` command generates the
 receiver's private TLS material and configuration and builds its device
-allowlist exclusively from signed enrollment receipts. It never starts a
-service and new configurations remain disabled. See
+allowlist exclusively from signed enrollment receipts. Fresh installations
+also provide convenience commands such as `printerhmi-relay-config`, but
+services use the stable dispatcher so a Moonraker Git update never depends on
+regenerating wrapper metadata. It never starts a service and new configurations
+remain disabled. See
 [relay configuration and enrollment](docs/RELAY_CONFIGURATION.md).
 
 ## Quick start

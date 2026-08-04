@@ -1,8 +1,9 @@
 # Relay configuration and enrollment
 
-`printerhmi-relay-config` creates the loopback receiver's complete private
+`printerhmi-agent relay-config` creates the loopback receiver's complete private
 configuration without requiring operators to edit JSON or copy public keys by
-hand. It is installed by the repository's normal `./install.sh` command.
+hand. Its stable launcher is installed by the repository's normal `./install.sh`
+command and remains valid across Moonraker source updates.
 
 The tool never installs or starts a service. New configurations are disabled,
 restricted to loopback and contain no enrolled devices.
@@ -12,7 +13,7 @@ restricted to loopback and contain no enrolled devices.
 Choose a new empty directory owned by the receiver service account:
 
 ```bash
-.venv/bin/printerhmi-relay-config init \
+.venv/bin/printerhmi-agent relay-config init \
   --directory "$HOME/.config/printerhmi-relay" \
   --relay-id my-relay
 ```
@@ -43,7 +44,7 @@ temporary secret because it contains the one-time code. On the receiver host,
 create the signed enrollment request:
 
 ```bash
-.venv/bin/printerhmi-relay-config request \
+.venv/bin/printerhmi-agent relay-config request \
   --directory "$HOME/.config/printerhmi-relay" \
   --offer pairing-offer.json \
   --output enrollment-request.json
@@ -61,7 +62,7 @@ protected device identity:
 Transfer only the receipt to the receiver and import it:
 
 ```bash
-.venv/bin/printerhmi-relay-config add-receipt \
+.venv/bin/printerhmi-agent relay-config add-receipt \
   --directory "$HOME/.config/printerhmi-relay" \
   --receipt enrollment-receipt.json
 ```
@@ -75,7 +76,7 @@ Repeat the pairing exchange for each printer host. Inspect the public status at
 any time without disclosing private keys:
 
 ```bash
-.venv/bin/printerhmi-relay-config status \
+.venv/bin/printerhmi-agent relay-config status \
   --directory "$HOME/.config/printerhmi-relay"
 ```
 
@@ -84,7 +85,7 @@ any time without disclosing private keys:
 Enabling requires at least one verified receipt and an explicit confirmation:
 
 ```bash
-.venv/bin/printerhmi-relay-config enable \
+.venv/bin/printerhmi-agent relay-config enable \
   --directory "$HOME/.config/printerhmi-relay" \
   --confirm
 ```

@@ -60,6 +60,33 @@ class UpdateManagerTests(unittest.TestCase):
         requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
         self.assertIn("cryptography>=42,<47", requirements)
 
+    def test_update_critical_roles_use_stable_agent_launcher(self):
+        cli = (ROOT / "src/printerhmi_agent/cli.py").read_text(encoding="utf-8")
+        for command in (
+            '"relay-config"',
+            '"relay-receiver"',
+            '"relay-worker"',
+            '"relay-sim"',
+        ):
+            self.assertIn(command, cli)
+
+        receiver_installer = (
+            ROOT / "install-relay-receiver-service.sh"
+        ).read_text(encoding="utf-8")
+        worker_installer = (ROOT / "install-relay-service.sh").read_text(
+            encoding="utf-8"
+        )
+        receiver_unit = (
+            ROOT / "packaging/systemd/printerhmi-relay-receiver.service.in"
+        ).read_text(encoding="utf-8")
+        worker_unit = (
+            ROOT / "packaging/systemd/printerhmi-remote-relay.service.in"
+        ).read_text(encoding="utf-8")
+        self.assertIn('"$agent" relay-receiver', receiver_installer)
+        self.assertIn('"$agent" relay-worker', worker_installer)
+        self.assertIn("@AGENT@ relay-receiver", receiver_unit)
+        self.assertIn("@AGENT@ relay-worker", worker_unit)
+
 
 if __name__ == "__main__":
     unittest.main()

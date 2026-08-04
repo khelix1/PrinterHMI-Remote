@@ -10,7 +10,7 @@ User=@SERVICE_USER@
 Group=@SERVICE_GROUP@
 Environment=HOME=@HOME_DIR@
 WorkingDirectory=@REPO_DIR@
-ExecStart=@WORKER@ --config @CONFIG@ --api-socket @API_SOCKET@ --state-file @WORKER_STATE@
+ExecStart=@AGENT@ relay-worker --config @CONFIG@ --api-socket @API_SOCKET@ --state-file @WORKER_STATE@
 Restart=on-failure
 RestartSec=5
 UMask=0077
