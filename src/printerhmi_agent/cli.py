@@ -24,6 +24,7 @@ def main(argv: Sequence[str] = None) -> int:
     # reachable through this stable launcher so managed updates are complete.
     component_commands = {
         "relay-config": "printerhmi_agent.relay_configuration",
+        "relay-integration": "printerhmi_agent.relay_integration",
         "relay-receiver": "printerhmi_agent.relay_receiver",
         "relay-worker": "printerhmi_agent.relay_worker",
         "relay-sim": "printerhmi_agent.relay_simulator",

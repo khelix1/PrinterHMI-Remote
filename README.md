@@ -46,6 +46,17 @@ regenerating wrapper metadata. It never starts a service and new configurations
 remain disabled. See
 [relay configuration and enrollment](docs/RELAY_CONFIGURATION.md).
 
+Before any public relay deployment, the disposable integration gate exercises
+the complete configurator, local API, worker and receiver path over loopback. It
+checks signed enrollment, changing live state, privacy filtering, device
+isolation, outage recovery and stale-state handling without touching production:
+
+```bash
+.venv/bin/printerhmi-agent relay-integration --json
+```
+
+See [end-to-end relay integration](docs/RELAY_INTEGRATION.md).
+
 ## Quick start
 
 ```bash

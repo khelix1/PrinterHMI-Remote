@@ -69,6 +69,8 @@ will be reconciled into the same catalog later.
 - `docs/TLS_TRANSPORT_FOUNDATION.md` owns isolated transport behavior and gates.
 - `docs/RELAY_CONFIGURATION.md` owns the operator enrollment and receiver
   configuration workflow.
+- `relay_integration.py` owns the disposable, production-shaped loopback gate;
+  it has no systemd, Moonraker-socket or public-listener authority.
 
 The production `run` service does not instantiate the relay connector. Network
 access cannot be enabled accidentally by placing a configuration file because
