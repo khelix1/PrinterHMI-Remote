@@ -64,6 +64,7 @@ class UpdateManagerTests(unittest.TestCase):
         cli = (ROOT / "src/printerhmi_agent/cli.py").read_text(encoding="utf-8")
         for command in (
             '"relay-config"',
+            '"relay-integration"',
             '"relay-receiver"',
             '"relay-worker"',
             '"relay-sim"',

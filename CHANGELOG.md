@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added a disposable loopback integration gate covering signed enrollment,
+  continuous worker delivery, receiver restart, stale state, device isolation,
+  privacy filtering and the absence of remote-control methods.
+
 - Made the existing `printerhmi-agent` command the stable dispatcher for all
   relay roles so Moonraker source updates do not depend on regenerating new
   editable-install console-script wrappers.

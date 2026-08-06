@@ -34,6 +34,7 @@
 - [x] Separate opt-in relay service with explicit operator enablement
 - [x] Loopback relay receiver with enrolled-key authentication and latest state
 - [x] Private TLS/config generation and signed-receipt allowlist tooling
+- [x] Disposable production-shaped loopback integration gate
 - [ ] Field-test the worker against a production relay
 - [ ] Multi-tenant isolation
 - [ ] Read-only browser/PWA dashboard
